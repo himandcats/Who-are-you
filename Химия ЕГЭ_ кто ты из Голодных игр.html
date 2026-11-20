@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Химия ЕГЭ: кто ты из Голодных игр</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: азартная арена, но задания — честный ЕГЭ
+   IDEA: колба-арена; каждое задание — раунд Игр
+   PICTURE: колба с пламенем, огонь растёт с правильными ответами
+   COLOUR and TYPE: угольный фон, огненный оранжевый, золото; Oswald + Inter
+   LAYOUT: одна колонка: шапка с колбой, карточка вопроса, прогресс */
+:root{color-scheme:light dark;--bg:light-dark(#f6efe6,#14110f);--card:light-dark(#fffaf3,#1f1a17);--ink:light-dark(#1d1612,#f3ebe2);--mute:light-dark(#6b5b50,#b3a397);--fire:#e8571c;--gold:#d9a021;--ok:#2f8f4e;--bad:#c4372b;--line:light-dark(#e3d6c7,#3a302a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:720px;margin:0 auto;padding:clamp(20px,4vw,48px) max(4vw,16px) 48px}
+h1,h2,.big{font-family:Oswald,Impact,sans-serif;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,7vw,48px)}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:20px;align-items:center;margin-bottom:24px}
+.hero p{color:var(--mute);margin:10px 0 0}
+.flask{width:150px;height:180px}
+#flame{transform-origin:75px 70px;transition:transform .5s}
+.bar{display:flex;gap:4px;margin:0 0 16px}
+.bar i{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.bar i.ok{background:var(--ok)}.bar i.bad{background:var(--bad)}.bar i.cur{background:var(--gold)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,28px);box-shadow:0 10px 30px -18px #000a}
+.meta{display:flex;justify-content:space-between;gap:10px;color:var(--mute);font-size:14px;margin-bottom:10px;flex-wrap:wrap}
+.tag{color:var(--fire);font-weight:600}
+.q{font-size:19px;font-weight:600;margin:0 0 16px}
+.opts{display:grid;gap:10px}
+button{font:inherit;color:inherit;cursor:pointer}
+.opt{min-height:52px;text-align:left;padding:12px 16px;border-radius:12px;border:2px solid var(--line);background:transparent;font-size:17px}
+.opt:hover:not(:disabled){border-color:var(--gold)}
+.opt:focus-visible,.go:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,transparent)}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 15%,transparent)}
+.opt:disabled{cursor:default}
+.ex{margin-top:14px;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--gold) 14%,transparent);font-size:15px}
+.ex b{display:block;margin-bottom:2px}
+.go{margin-top:16px;width:100%;min-height:52px;border:0;border-radius:12px;background:var(--fire);color:#fff;font-family:Oswald,sans-serif;font-size:20px;letter-spacing:.02em}
+.go:hover{filter:brightness(1.08)}
+.res{text-align:center}
+.res .d{color:var(--fire);font-weight:600}
+.res .big{font-size:clamp(40px,10vw,64px);margin:6px 0 8px}
+.res .t{font-family:Oswald,sans-serif;font-size:20px;color:var(--gold);margin-bottom:14px}
+.res p{text-align:left}
+.score{font-size:15px;color:var(--mute)}
+.topics{display:grid;gap:10px;margin:18px 0 6px;text-align:left}
+.tp{display:grid;grid-template-columns:8.5em minmax(0,1fr) 3em;gap:10px;align-items:center;font-size:15px}
+.tp .m{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.tp .m i{display:block;height:100%;background:var(--fire)}
+.tp span:last-child{text-align:right;white-space:nowrap}
+.hint{font-size:13px;color:var(--mute);margin-top:18px}
+@media(max-width:600px){.hero{grid-template-columns:minmax(0,1fr) 96px}.flask{width:96px;height:115px}.q{font-size:18px}}
+@media(prefers-reduced-motion:reduce){#flame{transition:none}.fl{animation:none!important}}
+.fl{animation:flick 1.6s ease-in-out infinite alternate;transform-origin:75px 72px}
+@keyframes flick{to{transform:scale(1.06,.94)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <h1>Химия ЕГЭ: кто ты из «Голодных игр»?</h1>
+      <p>15 раундов на арене: неорганика, органика и расчёты. Отвечай — и узнаешь, кем ты вышел бы из Игр.</p>
+    </div>
+    <svg class="flask" viewBox="0 0 150 180" aria-hidden="true">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd166"/><stop offset=".55" stop-color="#e8571c"/><stop offset="1" stop-color="#9b2c12"/></linearGradient>
+        <linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/></linearGradient>
+      </defs>
+      <ellipse cx="75" cy="172" rx="58" ry="6" fill="#000" opacity=".2"/>
+      <g id="flame"><g class="fl">
+        <path d="M75 8c14 18 24 30 18 48-3 10-11 16-18 16s-15-6-18-16c-6-18 4-30 18-48z" fill="url(#g1)"/>
+        <path d="M75 34c7 10 11 17 8 26-2 5-5 8-8 8s-6-3-8-8c-3-9 1-16 8-26z" fill="#ffe8a3"/>
+      </g></g>
+      <path d="M62 70h26v28l34 58c3 6-1 12-8 12H36c-7 0-11-6-8-12l34-58z" fill="color-mix(in srgb,#e8571c 30%,transparent)" stroke="#d9a021" stroke-width="3"/>
+      <path d="M44 128h62l14 26c2 5-1 9-6 9H36c-5 0-8-4-6-9z" fill="#e8571c" opacity=".85"/>
+      <circle cx="62" cy="142" r="4" fill="#ffd166"/><circle cx="84" cy="150" r="3" fill="#ffd166"/><circle cx="74" cy="134" r="2.5" fill="#ffd166"/>
+      <path d="M62 70h26v28l34 58c3 6-1 12-8 12H36c-7 0-11-6-8-12l34-58z" fill="url(#gl)"/>
+      <rect x="58" y="64" width="34" height="8" rx="3" fill="#d9a021"/>
+    </svg>
+  </header>
+  <div class="bar" id="bar"></div>
+  <main id="app"></main>
+</div>
+<script>
+{
+const Q=[
+{t:'Неорганика',q:'Какой из оксидов является амфотерным?',o:['ZnO','CaO','SO₃','Na₂O'],e:'ZnO реагирует и с кислотами, и со щелочами (образует цинкаты). CaO и Na₂O — основные, SO₃ — кислотный.'},
+{t:'Неорганика',q:'Водный раствор какой соли имеет кислую среду?',o:['AlCl₃','Na₂CO₃','KNO₃','NaCl'],e:'AlCl₃ — соль слабого основания и сильной кислоты, гидролиз по катиону → среда кислая. Na₂CO₃ даёт щелочную среду, KNO₃ и NaCl — нейтральную.'},
+{t:'Неорганика',q:'Какое вещество является сильным электролитом?',o:['H₂SO₄','CH₃COOH','H₂S','NH₃·H₂O'],e:'Серная кислота практически полностью диссоциирует. Уксусная, сероводородная кислоты и гидрат аммиака — слабые электролиты.'},
+{t:'Неорганика',q:'Какой металл НЕ реагирует с разбавленной соляной кислотой?',o:['Cu','Zn','Fe','Mg'],e:'Медь стоит в ряду активности после водорода и не вытесняет его из HCl.'},
+{t:'Неорганика',q:'Степень окисления хлора в KClO₃ равна…',o:['+5','+3','+7','−1'],e:'K(+1) + Cl(x) + 3·O(−2) = 0 → x = +5.'},
+{t:'Органика',q:'Реакция «серебряного зеркала» характерна для…',o:['этаналя','этанола','ацетона','этиленгликоля'],e:'Альдегиды окисляются аммиачным раствором оксида серебра, на стенках выделяется серебро. Спирты и кетоны так не реагируют.'},
+{t:'Органика',q:'Изомером бутана является…',o:['2-метилпропан','пропан','бутен-1','циклобутан'],e:'У 2-метилпропана та же формула C₄H₁₀. У бутена-1 и циклобутана — C₄H₈, пропан — гомолог.'},
+{t:'Органика',q:'Фиолетовое окрашивание фенол даёт с раствором…',o:['FeCl₃','CuSO₄','NaOH','KNO₃'],e:'Хлорид железа(III) — качественная реакция на фенол (фиолетовый комплекс).'},
+{t:'Органика',q:'Тип гибридизации атомов углерода в молекуле этилена:',o:['sp²','sp','sp³','sp³d'],e:'При двойной связи C=C атомы углерода находятся в sp²-гибридизации, угол около 120°.'},
+{t:'Органика',q:'При гидратации ацетилена (реакция Кучерова) образуется…',o:['уксусный альдегид','этанол','уксусная кислота','этилен'],e:'Сначала получается неустойчивый виниловый спирт, который изомеризуется в этаналь (уксусный альдегид).'},
+{t:'Расчёты',q:'Масса 2 моль гидроксида натрия равна…',o:['80 г','40 г','20 г','160 г'],e:'M(NaOH) = 23 + 16 + 1 = 40 г/моль; m = 2 · 40 = 80 г.'},
+{t:'Расчёты',q:'Объём 0,5 моль CO₂ при н. у. равен…',o:['11,2 л','22,4 л','5,6 л','44 л'],e:'V = n · Vm = 0,5 · 22,4 = 11,2 л.'},
+{t:'Расчёты',q:'20 г соли растворили в 180 г воды. Массовая доля соли в растворе:',o:['10%','11,1%','20%','9%'],e:'ω = 20 / (20 + 180) = 0,1 = 10%. Делить надо на массу всего раствора, а не воды.'},
+{t:'Расчёты',q:'Равновесие N₂ + 3H₂ ⇄ 2NH₃ + Q сместится вправо при…',o:['повышении давления','повышении температуры','понижении давления','добавлении катализатора'],e:'Справа меньше моль газов (2 против 4), поэтому рост давления смещает равновесие к аммиаку. Реакция экзотермическая — нагрев сдвигает влево, катализатор равновесие не смещает.'},
+{t:'Расчёты',q:'Температурный коэффициент γ = 2. Как изменится скорость при нагревании на 20 °C?',o:['вырастет в 4 раза','вырастет в 2 раза','вырастет в 40 раз','вырастет в 8 раз'],e:'По правилу Вант-Гоффа: 2^(20/10) = 2² = 4.'}
+];
+const R={
+katniss:{n:'Китнисс Эвердин',d:'Дистрикт 12',t:'Сойка-пересмешница',x:'Ни одного промаха — каждая стрела в цель. Ты не просто знаешь химию, ты в ней выживаешь. На ЕГЭ ты придёшь как на арену, где уже знаешь каждую ловушку.'},
+beetee:{n:'Бити',d:'Дистрикт 3',t:'Гений расчётов',x:'Моли, объёмы, проценты — твоя стихия, как провода и ловушки для Бити. Пока остальные паникуют, ты спокойно считаешь. Подтяни теорию — и станешь непобедимым.'},
+peeta:{n:'Пит Мелларк',d:'Дистрикт 12',t:'Пекарь органики',x:'Органика для тебя — как выпечка для Пита: знаешь, что из чего получается и почему. Тесто поднимается, альдегиды окисляются. Поработай с остальными разделами — и ты в финале.'},
+johanna:{n:'Джоанна Мейсон',d:'Дистрикт 7',t:'Острая неорганика',x:'Металлы, оксиды, гидролиз — ты рубишь неорганику точно, как топором. Характер есть, напор есть. Добавь органику и расчёты, чтобы не оставить соперникам шансов.'},
+gale:{n:'Гейл Хоторн',d:'Дистрикт 12',t:'Сильный охотник',x:'База крепкая, бьёшь уверенно, но иногда мимо цели. Ещё немного тренировок — и ты будешь опасен для любого задания второй части.'},
+haymitch:{n:'Хеймитч Эбернети',d:'Дистрикт 12',t:'Выживший, но потрёпанный',x:'Ты когда-то всё это знал… и даже выжил. Сейчас форма не лучшая, но опыт никуда не делся. Пора протрезветь от каникул и сесть за теорию.'},
+effie:{n:'Эффи Бряк',d:'Капитолий',t:'Яркая, но не в химии',x:'Наряды безупречны, а вот реакции — пока нет. Не беда: Эффи тоже многому научилась. Начни с основ, и пусть удача всегда будет на твоей стороне!'}
+};
+const T=['Неорганика','Органика','Расчёты'];
+const app=document.getElementById('app'),bar=document.getElementById('bar'),flame=document.getElementById('flame');
+let order,i,res;
+const sh=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+function start(){order=Q.map((q,k)=>({...q,k,opts:sh(q.o.map((x,n)=>({x,c:n===0})))}));i=0;res=[];draw()}
+function setFlame(){const ok=res.filter(Boolean).length;flame.style.transform=`scale(${0.5+ok/Q.length*0.7})`}
+function drawBar(){bar.innerHTML=Q.map((_,k)=>`<i class="${k<res.length?(res[k]?'ok':'bad'):k===i?'cur':''}"></i>`).join('')}
+function draw(){
+  drawBar();setFlame();
+  const q=order[i];
+  app.innerHTML=`<section class="card"><div class="meta"><span>Раунд ${i+1} из ${Q.length}</span><span class="tag">${q.t}</span></div>
+  <p class="q">${q.q}</p><div class="opts">${q.opts.map((o,n)=>`<button class="opt" data-n="${n}">${o.x}</button>`).join('')}</div><div id="after"></div></section>`;
+  app.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>pick(+b.dataset.n)));
+}
+function pick(n){
+  const q=order[i],ok=q.opts[n].c;res.push(ok);
+  app.querySelectorAll('.opt').forEach((b,k)=>{b.disabled=true;if(q.opts[k].c)b.classList.add('ok');else if(k===n)b.classList.add('bad')});
+  const last=i===Q.length-1;
+  document.getElementById('after').innerHTML=`<div class="ex"><b>${ok?'Точно в цель!':'Мимо.'}</b>${q.e}</div><button class="go" id="go">${last?'Узнать, кто я':'Дальше'}</button>`;
+  drawBar();setFlame();
+  const g=document.getElementById('go');g.focus({preventScroll:true});
+  g.addEventListener('click',()=>{if(last)result();else{i++;draw();window.scrollTo({top:0,behavior:'smooth'})}});
+}
+function result(){
+  i=Q.length;drawBar();
+  const by={};T.forEach(t=>by[t]=0);order.forEach((q,k)=>{if(res[k])by[q.t]++});
+  const s=res.filter(Boolean).length;
+  let key;
+  if(s>=14)key='katniss';
+  else if(s>=10){const best=T.reduce((a,b)=>by[b]>by[a]?b:a);key={Неорганика:'johanna',Органика:'peeta',Расчёты:'beetee'}[best]}
+  else if(s>=7)key='gale';else if(s>=4)key='haymitch';else key='effie';
+  const r=R[key];
+  app.innerHTML=`<section class="card res"><div class="d">${r.d}</div><h2 class="big">${r.n}</h2><div class="t">${r.t}</div>
+  <div class="score">Правильных ответов: ${s} из ${Q.length}</div>
+  <p>${r.x}</p>
+  <div class="topics">${T.map(t=>`<div class="tp"><span>${t}</span><span class="m"><i style="width:${by[t]/5*100}%"></i></span><span>${by[t]}/5</span></div>`).join('')}</div>
+  <button class="go" id="again">Пройти ещё раз</button>
+  <div class="hint">Варианты ответов перемешиваются при каждой попытке.</div></section>`;
+  document.getElementById('again').addEventListener('click',()=>{start();window.scrollTo({top:0,behavior:'smooth'})});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+start();
+}
+</script>
+</body>
+</html>
